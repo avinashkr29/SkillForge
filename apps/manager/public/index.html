@@ -12,127 +12,312 @@
       --text: #e8edf5;
       --muted: #8b9cb3;
       --accent: #3b82f6;
+      --accent-hover: #2563eb;
       --gbrain: #10b981;
       --warn: #f59e0b;
       --danger: #ef4444;
+      --success: #10b981;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: "Segoe UI", system-ui, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      padding: 24px;
+      padding: 32px;
+      line-height: 1.6;
     }
     header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 24px;
+      margin-bottom: 40px;
       flex-wrap: wrap;
-      gap: 12px;
+      gap: 16px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
     }
-    h1 { font-size: 1.5rem; }
+    h1 { 
+      font-size: 1.75rem; 
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+    .header-content p.meta {
+      margin-top: 4px;
+      font-size: 0.875rem;
+    }
     .badge {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      background: rgba(16, 185, 129, 0.15);
+      gap: 8px;
+      background: rgba(16, 185, 129, 0.1);
       color: var(--gbrain);
-      border: 1px solid rgba(16, 185, 129, 0.4);
-      padding: 6px 12px;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 8px 16px;
       border-radius: 999px;
-      font-size: 0.85rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+    .badge:hover {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: rgba(16, 185, 129, 0.5);
     }
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 24px;
     }
     .card {
       background: var(--panel);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px;
+      border-radius: 16px;
+      padding: 24px;
+      transition: border-color 0.2s ease;
+    }
+    .card:hover {
+      border-color: rgba(59, 130, 246, 0.3);
     }
     .card h2 {
-      font-size: 1rem;
-      margin-bottom: 16px;
+      font-size: 0.875rem;
+      margin-bottom: 20px;
       color: var(--muted);
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.08em;
+      font-weight: 600;
     }
-    .doc, .skill, .employee, .report {
+    .doc, .skill, .report {
       border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 10px;
-      background: rgba(0,0,0,0.2);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      background: rgba(0,0,0,0.3);
+      transition: all 0.2s ease;
     }
-    .doc h3, .skill h3 { font-size: 0.95rem; margin-bottom: 4px; }
-    .meta { color: var(--muted); font-size: 0.8rem; }
+    .doc:hover, .skill:hover, .report:hover {
+      background: rgba(0,0,0,0.4);
+      border-color: rgba(59, 130, 246, 0.4);
+      transform: translateY(-1px);
+    }
+    .doc:last-child, .skill:last-child, .report:last-child {
+      margin-bottom: 0;
+    }
+    .doc h3, .skill h3 { 
+      font-size: 1rem; 
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: var(--text);
+    }
+    .meta { 
+      color: var(--muted); 
+      font-size: 0.8125rem;
+      line-height: 1.5;
+    }
     button, select {
       background: var(--accent);
       color: white;
       border: none;
-      border-radius: 8px;
-      padding: 8px 14px;
+      border-radius: 10px;
+      padding: 10px 18px;
       cursor: pointer;
-      font-size: 0.85rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      font-family: inherit;
     }
-    button.secondary { background: transparent; border: 1px solid var(--border); color: var(--text); }
-    button:disabled { opacity: 0.5; cursor: not-allowed; }
-    .row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; align-items: center; }
-    .gap { color: var(--warn); font-size: 0.85rem; }
-    .score { font-weight: 700; color: var(--gbrain); }
-    .status { font-size: 0.8rem; color: var(--muted); margin-top: 16px; }
-    .assign-form { display: grid; gap: 10px; }
-    .assign-form label { font-size: 0.85rem; color: var(--muted); }
+    button:hover:not(:disabled) {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+    button.secondary { 
+      background: transparent; 
+      border: 1px solid var(--border); 
+      color: var(--text);
+    }
+    button.secondary:hover:not(:disabled) {
+      background: rgba(59, 130, 246, 0.1);
+      border-color: var(--accent);
+      transform: translateY(-1px);
+      box-shadow: none;
+    }
+    button:disabled { 
+      opacity: 0.5; 
+      cursor: not-allowed;
+      transform: none;
+    }
+    select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23e8edf5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 40px;
+      background-color: rgba(0,0,0,0.3);
+    }
+    select:hover {
+      background-color: rgba(0,0,0,0.4);
+    }
+    .row { 
+      display: flex; 
+      gap: 10px; 
+      flex-wrap: wrap; 
+      margin-top: 12px; 
+      align-items: center;
+    }
+    .gap { 
+      color: var(--warn); 
+      font-size: 0.875rem;
+      margin-top: 8px;
+      padding: 8px 12px;
+      background: rgba(245, 158, 11, 0.1);
+      border-radius: 8px;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+    .score { 
+      font-weight: 700; 
+      color: var(--gbrain);
+      font-size: 1.25rem;
+      margin-left: auto;
+    }
+    .status { 
+      font-size: 0.8125rem; 
+      color: var(--muted); 
+      margin-top: 16px;
+      padding: 12px;
+      background: rgba(59, 130, 246, 0.1);
+      border-radius: 8px;
+      border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+    .status.success {
+      color: var(--success);
+      background: rgba(16, 185, 129, 0.1);
+      border-color: rgba(16, 185, 129, 0.2);
+    }
+    .status.error {
+      color: var(--danger);
+      background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.2);
+    }
+    .assign-form { 
+      display: grid; 
+      gap: 16px;
+    }
+    .assign-form label { 
+      font-size: 0.875rem; 
+      color: var(--text);
+      font-weight: 500;
+      margin-bottom: -8px;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 32px 16px;
+      color: var(--muted);
+      font-size: 0.875rem;
+    }
+    .loading {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .report {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .report strong {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+    .report .meta {
+      margin-top: 4px;
+      flex-basis: 100%;
+    }
+    @media (max-width: 768px) {
+      body {
+        padding: 20px;
+      }
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
   <header>
-    <div>
+    <div class="header-content">
       <h1>SkillForge Manager</h1>
       <p class="meta">Assign GBrain procedures to employees and track readiness</p>
     </div>
-    <span class="badge" id="gbrain-badge">● Sourced from GBrain</span>
+    <span class="badge" id="gbrain-badge">
+      <span class="loading"></span>
+      Connecting to GBrain...
+    </span>
   </header>
 
   <div class="grid">
     <section class="card">
       <h2>GBrain Documents</h2>
-      <div id="gbrain-docs"></div>
+      <div id="gbrain-docs">
+        <div class="empty-state">
+          <span class="loading"></span>
+          <p style="margin-top: 12px;">Loading documents...</p>
+        </div>
+      </div>
       <div class="row">
-        <button onclick="syncAll()">Sync all from GBrain</button>
+        <button onclick="syncAll()" id="sync-all-btn">
+          <span id="sync-text">Sync all from GBrain</span>
+        </button>
       </div>
     </section>
 
     <section class="card">
       <h2>Executable Skills</h2>
-      <div id="skills"></div>
+      <div id="skills">
+        <div class="empty-state">
+          <span class="loading"></span>
+          <p style="margin-top: 12px;">Loading skills...</p>
+        </div>
+      </div>
     </section>
 
     <section class="card">
       <h2>Assign Training</h2>
       <div class="assign-form">
         <label>Employee</label>
-        <select id="employee-select"></select>
+        <select id="employee-select">
+          <option>Loading employees...</option>
+        </select>
         <label>Skill (from GBrain)</label>
-        <select id="skill-select"></select>
-        <button onclick="assignSkill()">Assign to employee</button>
+        <select id="skill-select">
+          <option>Loading skills...</option>
+        </select>
+        <button onclick="assignSkill()" id="assign-btn">Assign to employee</button>
       </div>
-      <p class="status" id="assign-status"></p>
+      <p class="status" id="assign-status" style="display: none;"></p>
     </section>
 
     <section class="card" style="grid-column: 1 / -1;">
       <h2>Team Readiness & Skill Gaps</h2>
-      <div id="readiness"></div>
+      <div id="readiness">
+        <div class="empty-state">
+          <span class="loading"></span>
+          <p style="margin-top: 12px;">Loading team readiness...</p>
+        </div>
+      </div>
     </section>
   </div>
 
   <script>
     const API = window.location.origin;
+    let isLoading = false;
 
     async function fetchJSON(path) {
       const res = await fetch(`${API}${path}`);
@@ -141,91 +326,202 @@
     }
 
     async function loadGBrainDocs() {
-      const data = await fetchJSON("/api/gbrain/documents");
-      const el = document.getElementById("gbrain-docs");
-      el.innerHTML = data.documents.map(doc => `
-        <div class="doc">
-          <h3>${doc.title}</h3>
-          <p class="meta">${doc.productCode} · ${doc.id}</p>
-          <div class="row">
-            <button class="secondary" onclick="syncDoc('${doc.id}')">Extract skill</button>
+      try {
+        const data = await fetchJSON("/api/gbrain/documents");
+        const el = document.getElementById("gbrain-docs");
+        
+        if (!data.documents || data.documents.length === 0) {
+          el.innerHTML = '<div class="empty-state"><p>No GBrain documents found</p></div>';
+          return;
+        }
+
+        el.innerHTML = data.documents.map(doc => `
+          <div class="doc">
+            <h3>${doc.title}</h3>
+            <p class="meta">${doc.productCode} · ${doc.id}</p>
+            <div class="row">
+              <button class="secondary" onclick="syncDoc('${doc.id}')">Extract skill</button>
+            </div>
           </div>
-        </div>
-      `).join("") || "<p class='meta'>No GBrain documents found</p>";
+        `).join("");
+      } catch (err) {
+        showError("gbrain-docs", err.message);
+      }
     }
 
     async function loadSkills() {
-      const data = await fetchJSON("/api/skills");
-      const el = document.getElementById("skills");
-      const select = document.getElementById("skill-select");
+      try {
+        const data = await fetchJSON("/api/skills");
+        const el = document.getElementById("skills");
+        const select = document.getElementById("skill-select");
 
-      el.innerHTML = data.skills.map(skill => `
-        <div class="skill">
-          <h3>${skill.title}</h3>
-          <p class="meta">From GBrain: ${skill.source.title}</p>
-          <p class="meta">${skill.steps.length} step(s) · ${skill.productCode || "N/A"}</p>
-        </div>
-      `).join("") || "<p class='meta'>Sync GBrain documents to create skills</p>";
+        if (!data.skills || data.skills.length === 0) {
+          el.innerHTML = '<div class="empty-state"><p>Sync GBrain documents to create skills</p></div>';
+          select.innerHTML = '<option value="">No skills available</option>';
+          return;
+        }
 
-      select.innerHTML = data.skills.map(s =>
-        `<option value="${s.id}">${s.title}</option>`
-      ).join("");
+        el.innerHTML = data.skills.map(skill => `
+          <div class="skill">
+            <h3>${skill.title}</h3>
+            <p class="meta">From GBrain: ${skill.source.title}</p>
+            <p class="meta">${skill.steps.length} step(s) · ${skill.productCode || "N/A"}</p>
+          </div>
+        `).join("");
+
+        select.innerHTML = data.skills.map(s =>
+          `<option value="${s.id}">${s.title}</option>`
+        ).join("");
+      } catch (err) {
+        showError("skills", err.message);
+      }
     }
 
     async function loadEmployees() {
-      const data = await fetchJSON("/api/employees");
-      const select = document.getElementById("employee-select");
-      select.innerHTML = data.employees.map(e =>
-        `<option value="${e.id}">${e.name} (${e.role})</option>`
-      ).join("");
+      try {
+        const data = await fetchJSON("/api/employees");
+        const select = document.getElementById("employee-select");
+        
+        if (!data.employees || data.employees.length === 0) {
+          select.innerHTML = '<option value="">No employees found</option>';
+          return;
+        }
+
+        select.innerHTML = data.employees.map(e =>
+          `<option value="${e.id}">${e.name} (${e.role})</option>`
+        ).join("");
+      } catch (err) {
+        console.error("Failed to load employees:", err);
+      }
     }
 
     async function loadReadiness() {
-      const data = await fetchJSON("/api/readiness");
-      const el = document.getElementById("readiness");
-      el.innerHTML = data.reports.map(r => `
-        <div class="report">
-          <strong>${r.employeeName}</strong>
-          <span class="score">${r.averageReadiness}% ready</span>
-          <p class="meta">${r.completedSkills}/${r.assignedSkills} skills completed</p>
-          ${r.skillGaps.length
-            ? `<p class="gap">Skill gaps: ${r.skillGaps.join(", ")}</p>`
-            : `<p class="meta">No open skill gaps</p>`}
-        </div>
-      `).join("");
+      try {
+        const data = await fetchJSON("/api/readiness");
+        const el = document.getElementById("readiness");
+        
+        if (!data.reports || data.reports.length === 0) {
+          el.innerHTML = '<div class="empty-state"><p>No readiness data available</p></div>';
+          return;
+        }
+
+        el.innerHTML = data.reports.map(r => `
+          <div class="report">
+            <strong>${r.employeeName}</strong>
+            <span class="score">${r.averageReadiness}%</span>
+            <p class="meta">${r.completedSkills}/${r.assignedSkills} skills completed</p>
+            ${r.skillGaps.length
+              ? `<p class="gap">⚠️ Skill gaps: ${r.skillGaps.join(", ")}</p>`
+              : `<p class="meta" style="color: var(--success);">✓ No open skill gaps</p>`}
+          </div>
+        `).join("");
+      } catch (err) {
+        showError("readiness", err.message);
+      }
     }
 
     async function syncDoc(id) {
-      await fetchJSON(`/api/gbrain/sync/${id}`);
-      await refresh();
+      if (isLoading) return;
+      isLoading = true;
+      
+      try {
+        await fetchJSON(`/api/gbrain/sync/${id}`);
+        await refresh();
+        showStatus("Document synced successfully", "success");
+      } catch (err) {
+        showStatus(`Sync failed: ${err.message}`, "error");
+      } finally {
+        isLoading = false;
+      }
     }
 
     async function syncAll() {
-      await fetchJSON("/api/gbrain/sync-all");
-      await refresh();
+      if (isLoading) return;
+      
+      const btn = document.getElementById("sync-all-btn");
+      const text = document.getElementById("sync-text");
+      isLoading = true;
+      btn.disabled = true;
+      text.textContent = "Syncing...";
+      
+      try {
+        await fetchJSON("/api/gbrain/sync-all");
+        await refresh();
+        showStatus("All documents synced successfully", "success");
+      } catch (err) {
+        showStatus(`Sync failed: ${err.message}`, "error");
+      } finally {
+        isLoading = false;
+        btn.disabled = false;
+        text.textContent = "Sync all from GBrain";
+      }
     }
 
     async function assignSkill() {
       const employeeId = document.getElementById("employee-select").value;
       const skillUnitId = document.getElementById("skill-select").value;
-      const status = document.getElementById("assign-status");
+      
+      if (!employeeId || !skillUnitId) {
+        showStatus("Please select both an employee and a skill", "error");
+        return;
+      }
 
-      const res = await fetch(`${API}/api/assignments`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ employeeId, skillUnitId, assignedBy: "manager" }),
-      });
-      const data = await res.json();
-      status.textContent = data.message || "Assigned";
-      await loadReadiness();
+      const btn = document.getElementById("assign-btn");
+      btn.disabled = true;
+      btn.textContent = "Assigning...";
+
+      try {
+        const res = await fetch(`${API}/api/assignments`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ employeeId, skillUnitId, assignedBy: "manager" }),
+        });
+        const data = await res.json();
+        showStatus(data.message || "Skill assigned successfully", "success");
+        await loadReadiness();
+      } catch (err) {
+        showStatus(`Assignment failed: ${err.message}`, "error");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Assign to employee";
+      }
     }
 
     async function loadGBrainStatus() {
-      const data = await fetchJSON("/api/gbrain/status");
-      const mode = data.connector?.mode || "unknown";
-      const badge = document.getElementById("gbrain-badge");
-      badge.textContent = `● GBrain (${mode}) — garrytan/gbrain`;
-      badge.title = data.officialRepos?.guide || "";
+      try {
+        const data = await fetchJSON("/api/gbrain/status");
+        const mode = data.connector?.mode || "unknown";
+        const badge = document.getElementById("gbrain-badge");
+        badge.innerHTML = `● GBrain (${mode})`;
+        badge.title = data.officialRepos?.guide || "GBrain integration active";
+      } catch (err) {
+        const badge = document.getElementById("gbrain-badge");
+        badge.innerHTML = "⚠️ GBrain offline";
+        badge.style.borderColor = "var(--warn)";
+        badge.style.color = "var(--warn)";
+      }
+    }
+
+    function showStatus(message, type = "info") {
+      const statusEl = document.getElementById("assign-status");
+      statusEl.textContent = message;
+      statusEl.className = `status ${type}`;
+      statusEl.style.display = "block";
+      
+      if (type === "success") {
+        setTimeout(() => {
+          statusEl.style.display = "none";
+        }, 5000);
+      }
+    }
+
+    function showError(elementId, message) {
+      const el = document.getElementById(elementId);
+      el.innerHTML = `
+        <div class="empty-state" style="color: var(--danger);">
+          <p>⚠️ Error: ${message}</p>
+        </div>
+      `;
     }
 
     async function refresh() {
@@ -240,7 +536,10 @@
 
     refresh().catch(err => {
       document.body.insertAdjacentHTML("beforeend",
-        `<p class="status" style="color:var(--danger)">API error: ${err.message}. Start the API with: uvicorn skillforge_api.main:app --reload</p>`
+        `<div class="status error" style="position: fixed; bottom: 24px; right: 24px; max-width: 400px; z-index: 1000;">
+          <strong>API Error:</strong> ${err.message}<br>
+          <small style="opacity: 0.8;">Start the API with: uvicorn skillforge_api.main:app --reload</small>
+        </div>`
       );
     });
   </script>

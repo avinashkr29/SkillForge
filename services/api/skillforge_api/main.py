@@ -81,4 +81,12 @@ def root():
 
 @app.get("/health")
 def health():
-    return {"status": "ok", "gbrain": "connected-mock"}
+    connector = app.state.gbrain
+    status = connector.status()
+    return {
+        "status": "ok",
+        "gbrain": {
+            "mode": status["mode"],
+            "documentCount": status["documentCount"],
+        },
+    }
