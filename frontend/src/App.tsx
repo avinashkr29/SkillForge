@@ -366,7 +366,7 @@ function TeachingMode({ onSwitchMode }: { onSwitchMode: () => void }) {
       );
     });
 
-    const drawArrow = (source: LegoBlock, destination: LegoBlock, stepNumber: number) => {
+    const drawArrow = (source: LegoBlock, destination: LegoBlock) => {
       const from = displayPoint(source.center);
       const to = displayPoint(destination.center);
       context.save();
@@ -384,32 +384,24 @@ function TeachingMode({ onSwitchMode }: { onSwitchMode: () => void }) {
       context.lineTo(to.x - 18 * Math.cos(angle + 0.45), to.y - 18 * Math.sin(angle + 0.45));
       context.closePath();
       context.fill();
-      const labelX = from.x + (to.x - from.x) * 0.5;
-      const labelY = from.y + (to.y - from.y) * 0.5;
-      context.fillStyle = "#101314";
-      context.strokeStyle = "#ffffff";
-      context.lineWidth = 2;
-      context.beginPath();
-      context.arc(labelX, labelY, 14, 0, Math.PI * 2);
-      context.fillStyle = "#2ec46d";
-      context.fill();
-      context.stroke();
-      context.fillStyle = "#ffffff";
-      context.font = "800 14px Inter, system-ui, sans-serif";
-      context.textAlign = "center";
-      context.textBaseline = "middle";
-      context.fillText(String(stepNumber), labelX, labelY);
       context.restore();
     };
 
-    legoSteps.forEach((step, index) => {
-      const source = pickBlockByColor(legoBlocks, step.sourceColor);
-      const destination = pickBlockByColor(legoBlocks, step.targetColor);
-      if (source && destination) {
-        drawArrow(source, destination, index + 1);
+    // Draw single arrow based on selected product
+    if (selectedProduct) {
+      const blue = pickBlockByColor(legoBlocks, "blue");
+      const black = pickBlockByColor(legoBlocks, "black");
+      if (blue && black) {
+        if (selectedProduct === "product-1") {
+          // Product 1: Blue goes on top of Black (arrow from blue to black)
+          drawArrow(blue, black);
+        } else {
+          // Product 2: Black goes on top of Blue (arrow from black to blue)
+          drawArrow(black, blue);
+        }
       }
-    });
-  }, [candidates, legoBlocks, legoSteps, sessionState, target]);
+    }
+  }, [candidates, legoBlocks, legoSteps, selectedProduct, sessionState, target]);
 
   useEffect(() => {
     drawOverlay();
@@ -849,10 +841,22 @@ function TeachingMode({ onSwitchMode }: { onSwitchMode: () => void }) {
               aria-label="Object selection overlay"
             />
             <canvas ref={captureRef} hidden />
-            <div className={`tracking-banner state-${sessionState.toLowerCase()}`}>
-              <span>{selectedProduct ? `Building: ${selectedProduct === "product-1" ? "Product 1 (Blue on Black)" : "Product 2 (Black on Blue)"}` : "Select a product below"}</span>
-              <strong style={{ color: detectedProduct && selectedProduct && detectedProduct.id === selectedProduct ? "#2ec46d" : undefined }}>
-                {detectedProduct ? `DETECTED: ${detectedProduct.name}` : legoStatus}
+            <div className={`tracking-banner state-${sessionState.toLowerCase()}`} style={{
+              background: detectedProduct && selectedProduct && detectedProduct.id === selectedProduct ? "#2ec46d" : undefined
+            }}>
+              <span style={{ color: detectedProduct && selectedProduct && detectedProduct.id === selectedProduct ? "#000" : undefined }}>
+                {detectedProduct && selectedProduct && detectedProduct.id === selectedProduct 
+                  ? "SKILL DONE!" 
+                  : selectedProduct 
+                    ? `Building: ${selectedProduct === "product-1" ? "Product 1 (Blue on Black)" : "Product 2 (Black on Blue)"}` 
+                    : "Select a product below"}
+              </span>
+              <strong style={{ color: detectedProduct && selectedProduct && detectedProduct.id === selectedProduct ? "#000" : undefined }}>
+                {detectedProduct && selectedProduct && detectedProduct.id === selectedProduct 
+                  ? `${detectedProduct.name} completed!` 
+                  : detectedProduct 
+                    ? `DETECTED: ${detectedProduct.name}` 
+                    : legoStatus}
               </strong>
             </div>
           </div>
@@ -936,14 +940,26 @@ function TeachingMode({ onSwitchMode }: { onSwitchMode: () => void }) {
             <div className="lego-progress" style={{ marginTop: "12px" }}>
               <span>Detected colors: {legoInventory || "none"}</span>
               {detectedProduct && selectedProduct && (
-                <strong style={{ 
-                  fontSize: "1.3em", 
-                  color: detectedProduct.id === selectedProduct ? "#2ec46d" : "#f25555",
-                  marginTop: "8px",
-                  display: "block"
+                <div style={{ 
+                  marginTop: "12px",
+                  padding: detectedProduct.id === selectedProduct ? "16px" : "8px",
+                  background: detectedProduct.id === selectedProduct ? "#2ec46d" : "transparent",
+                  borderRadius: "8px",
+                  textAlign: "center"
                 }}>
-                  {detectedProduct.id === selectedProduct ? "CORRECT!" : `Wrong - Detected ${detectedProduct.name}`}
-                </strong>
+                  <strong style={{ 
+                    fontSize: detectedProduct.id === selectedProduct ? "1.6em" : "1.2em", 
+                    color: detectedProduct.id === selectedProduct ? "#000" : "#f25555",
+                    display: "block"
+                  }}>
+                    {detectedProduct.id === selectedProduct ? "SKILL DONE!" : `Wrong - Detected ${detectedProduct.name}`}
+                  </strong>
+                  {detectedProduct.id === selectedProduct && (
+                    <span style={{ color: "#000", fontSize: "1em" }}>
+                      {selectedProduct === "product-1" ? "Blue on Black" : "Black on Blue"} completed successfully!
+                    </span>
+                  )}
+                </div>
               )}
             </div>
           </div>
