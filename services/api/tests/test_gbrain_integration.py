@@ -10,20 +10,28 @@ from skillforge_api.store import SkillForgeStore
 from skillforge_api.structuring.engine import StructuringEngine
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
+BRAIN_DIR = REPO_ROOT / "brain" / "manufacturing"
 MOCK_DIR = REPO_ROOT / "data" / "gbrain-mock"
 
 
 @pytest.fixture
 def connector():
-    return GBrainConnector(mock_dir=MOCK_DIR)
+    return GBrainConnector(brain_dir=BRAIN_DIR)
 
 
-def test_mock_gbrain_loads_product_documents(connector):
+def test_brain_repo_loads_product_documents(connector):
     docs = connector.list_documents()
     assert len(docs) >= 2
     product_codes = {doc.product_code for doc in docs}
     assert "PRODUCT-1" in product_codes
     assert "PRODUCT-2" in product_codes
+    assert connector.mode.value in {"brain-filesystem", "gbrain-cli"}
+
+
+def test_connector_reports_official_repos(connector):
+    status = connector.status()
+    assert "github.com/garrytan/gbrain" in status["officialRepo"]
+    assert "github.com/garrytan/gstack" in status["gstackRepo"]
 
 
 def test_structuring_extracts_lego_steps(connector):
@@ -41,7 +49,7 @@ def test_structuring_extracts_lego_steps(connector):
 
 @asynccontextmanager
 async def _initialized_app():
-    connector = GBrainConnector(mock_dir=MOCK_DIR)
+    connector = GBrainConnector(brain_dir=BRAIN_DIR)
     structuring = StructuringEngine()
     store = SkillForgeStore()
     for document in connector.list_documents():
@@ -58,6 +66,10 @@ async def test_api_sync_and_assign():
     async with _initialized_app():
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url="http://test") as client:
+            status = await client.get("/api/gbrain/status")
+            assert status.status_code == 200
+            assert status.json()["officialRepos"]["gbrain"].endswith("/gbrain")
+
             docs = await client.get("/api/gbrain/documents")
             assert docs.status_code == 200
             assert docs.json()["source"] == "gbrain"

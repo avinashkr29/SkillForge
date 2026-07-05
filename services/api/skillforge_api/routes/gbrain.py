@@ -5,11 +5,26 @@ from fastapi import APIRouter, HTTPException, Request
 router = APIRouter(prefix="/gbrain", tags=["gbrain"])
 
 
+@router.get("/status")
+def gbrain_status(request: Request):
+    connector = request.app.state.gbrain
+    return {
+        "integration": "official-gbrain-gstack",
+        "officialRepos": {
+            "gbrain": "https://github.com/garrytan/gbrain",
+            "gstack": "https://github.com/garrytan/gstack",
+            "guide": "https://github.com/garrytan/gstack/blob/main/USING_GBRAIN_WITH_GSTACK.md",
+        },
+        "connector": connector.status(),
+    }
+
+
 @router.get("/documents")
 def list_gbrain_documents(request: Request):
     connector = request.app.state.gbrain
     return {
         "source": "gbrain",
+        "connector": connector.status(),
         "documents": [doc.model_dump(by_alias=True) for doc in connector.list_documents()],
     }
 

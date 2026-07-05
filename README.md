@@ -106,7 +106,7 @@ uvicorn skillforge_api.main:app --reload --port 8000
 - Employee: http://localhost:8000/employee — practice assigned procedures
 - LEGO AR verifier: `cd services/cv-verification && python -m lego_ar`
 
-See [docs/gbrain-integration.md](docs/gbrain-integration.md) and [docs/g-stack/README.md](docs/g-stack/README.md).
+See [docs/gstack-integration.md](docs/gstack-integration.md) for official [GBrain](https://github.com/garrytan/gbrain) + [GStack](https://github.com/garrytan/gstack) setup.
 
 ## Roadmap
 

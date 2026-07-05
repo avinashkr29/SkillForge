@@ -96,7 +96,7 @@
       <h1>SkillForge Manager</h1>
       <p class="meta">Assign GBrain procedures to employees and track readiness</p>
     </div>
-    <span class="badge">● Sourced from GBrain</span>
+    <span class="badge" id="gbrain-badge">● Sourced from GBrain</span>
   </header>
 
   <div class="grid">
@@ -220,8 +220,17 @@
       await loadReadiness();
     }
 
+    async function loadGBrainStatus() {
+      const data = await fetchJSON("/api/gbrain/status");
+      const mode = data.connector?.mode || "unknown";
+      const badge = document.getElementById("gbrain-badge");
+      badge.textContent = `● GBrain (${mode}) — garrytan/gbrain`;
+      badge.title = data.officialRepos?.guide || "";
+    }
+
     async function refresh() {
       await Promise.all([
+        loadGBrainStatus(),
         loadGBrainDocs(),
         loadSkills(),
         loadEmployees(),

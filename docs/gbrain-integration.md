@@ -21,11 +21,14 @@ sequenceDiagram
     SF->>SF: Store skill unit, publish to portals
 ```
 
-## Current Implementation (Mock)
+## Current Implementation
 
-> Status: **Mock connector implemented** — uses `data/gbrain-mock/` as stand-in GBrain documents until the live API is connected.
+> Status: **Official GBrain integration** — uses [garrytan/gbrain](https://github.com/garrytan/gbrain) CLI when installed, reads `brain/manufacturing/` as source-of-truth, falls back to `data/gbrain-mock/` only if needed.
 
-The mock ships two manufacturing SOPs:
+Setup via [GStack](https://github.com/garrytan/gstack): `/setup-gbrain` then `gbrain import brain/`.  
+Full guide: [docs/gstack-integration.md](gstack-integration.md)
+
+Manufacturing SOPs in the GBrain brain repo:
 
 | Document | Product | Steps |
 |----------|---------|-------|
