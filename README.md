@@ -42,6 +42,12 @@ flowchart TD
     Feedback --> Manager[Manager Dashboard]
 ```
 
+### Demo Flow
+
+End-to-end demo in five minutes — from GBrain knowledge to manager readiness:
+
+![SkillForge demo flow: GBrain → AI structuring → employee practice → AI feedback → manager dashboard](assets/demo-flow.jpg)
+
 ### Dual Knowledge Input
 
 **Existing company documentation** — SOPs, manuals, PDFs, and internal docs stored in GBrain are converted into executable procedures.
@@ -92,7 +98,7 @@ Development setup instructions are coming soon as each package is scaffolded.
 
 | Phase | Deliverable | Status |
 |-------|-------------|--------|
-| 0 | Repo bootstrap, docs, monorepo skeleton | In progress |
+| 0 | Repo bootstrap, docs, monorepo skeleton | Complete |
 | 1 | Skill unit JSON schema in `packages/shared` | Planned |
 | 2 | GBrain connector in `services/api` | Planned |
 | 3 | AI structuring pipeline (doc/video → skill unit) | Planned |
@@ -103,6 +109,14 @@ Development setup instructions are coming soon as each package is scaffolded.
 ## Demo Scenario
 
 SkillForge demonstrates end-to-end procedural execution using a LEGO assembly workflow. The process mirrors real manufacturing: AI generates the procedure, the employee follows instructions, AI verifies each step, errors are detected instantly, and readiness updates on the manager dashboard.
+
+LEGO serves as a visual proxy for real-world assembly, safety, and operational procedures.
+
+### Manager Dashboard
+
+Managers get real-time visibility into team readiness, skill gaps, compliance, and who is ready for real work:
+
+![SkillForge manager dashboard showing team readiness, heatmap, gap reports, and compliance](assets/manager-dashboard.jpg)
 
 ## License
 
