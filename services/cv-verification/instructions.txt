@@ -1,0 +1,5 @@
+# LEGO assembly instructions
+# Format: step <number/word>: take <color> block put on top of <color> block
+
+step one: take red block put on top of white block
+step two: take yellow block put on top of red block

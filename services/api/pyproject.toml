@@ -1,0 +1,28 @@
+[project]
+name = "skillforge-api"
+version = "0.2.0"
+description = "SkillForge API — GBrain connector, structuring, assignments"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi>=0.110.0",
+    "uvicorn[standard]>=0.27.0",
+    "pydantic>=2.6.0",
+    "skillforge-shared",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0.0", "httpx>=0.27.0"]
+
+[project.scripts]
+skillforge-api = "skillforge_api.main:run"
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["skillforge_api*"]
+
+[tool.uv.sources]
+skillforge-shared = { path = "../../packages/shared/python", editable = true }

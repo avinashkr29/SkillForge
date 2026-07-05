@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SkillForge Manager — Powered by GBrain</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --panel: #1a2332;
+      --border: #2d3a4f;
+      --text: #e8edf5;
+      --muted: #8b9cb3;
+      --accent: #3b82f6;
+      --gbrain: #10b981;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 24px;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    h1 { font-size: 1.5rem; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--gbrain);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .card h2 {
+      font-size: 1rem;
+      margin-bottom: 16px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .doc, .skill, .employee, .report {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 10px;
+      background: rgba(0,0,0,0.2);
+    }
+    .doc h3, .skill h3 { font-size: 0.95rem; margin-bottom: 4px; }
+    .meta { color: var(--muted); font-size: 0.8rem; }
+    button, select {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 14px;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+    button.secondary { background: transparent; border: 1px solid var(--border); color: var(--text); }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; align-items: center; }
+    .gap { color: var(--warn); font-size: 0.85rem; }
+    .score { font-weight: 700; color: var(--gbrain); }
+    .status { font-size: 0.8rem; color: var(--muted); margin-top: 16px; }
+    .assign-form { display: grid; gap: 10px; }
+    .assign-form label { font-size: 0.85rem; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>SkillForge Manager</h1>
+      <p class="meta">Assign GBrain procedures to employees and track readiness</p>
+    </div>
+    <span class="badge">● Sourced from GBrain</span>
+  </header>
+
+  <div class="grid">
+    <section class="card">
+      <h2>GBrain Documents</h2>
+      <div id="gbrain-docs"></div>
+      <div class="row">
+        <button onclick="syncAll()">Sync all from GBrain</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Executable Skills</h2>
+      <div id="skills"></div>
+    </section>
+
+    <section class="card">
+      <h2>Assign Training</h2>
+      <div class="assign-form">
+        <label>Employee</label>
+        <select id="employee-select"></select>
+        <label>Skill (from GBrain)</label>
+        <select id="skill-select"></select>
+        <button onclick="assignSkill()">Assign to employee</button>
+      </div>
+      <p class="status" id="assign-status"></p>
+    </section>
+
+    <section class="card" style="grid-column: 1 / -1;">
+      <h2>Team Readiness & Skill Gaps</h2>
+      <div id="readiness"></div>
+    </section>
+  </div>
+
+  <script>
+    const API = window.location.origin;
+
+    async function fetchJSON(path) {
+      const res = await fetch(`${API}${path}`);
+      if (!res.ok) throw new Error(await res.text());
+      return res.json();
+    }
+
+    async function loadGBrainDocs() {
+      const data = await fetchJSON("/api/gbrain/documents");
+      const el = document.getElementById("gbrain-docs");
+      el.innerHTML = data.documents.map(doc => `
+        <div class="doc">
+          <h3>${doc.title}</h3>
+          <p class="meta">${doc.productCode} · ${doc.id}</p>
+          <div class="row">
+            <button class="secondary" onclick="syncDoc('${doc.id}')">Extract skill</button>
+          </div>
+        </div>
+      `).join("") || "<p class='meta'>No GBrain documents found</p>";
+    }
+
+    async function loadSkills() {
+      const data = await fetchJSON("/api/skills");
+      const el = document.getElementById("skills");
+      const select = document.getElementById("skill-select");
+
+      el.innerHTML = data.skills.map(skill => `
+        <div class="skill">
+          <h3>${skill.title}</h3>
+          <p class="meta">From GBrain: ${skill.source.title}</p>
+          <p class="meta">${skill.steps.length} step(s) · ${skill.productCode || "N/A"}</p>
+        </div>
+      `).join("") || "<p class='meta'>Sync GBrain documents to create skills</p>";
+
+      select.innerHTML = data.skills.map(s =>
+        `<option value="${s.id}">${s.title}</option>`
+      ).join("");
+    }
+
+    async function loadEmployees() {
+      const data = await fetchJSON("/api/employees");
+      const select = document.getElementById("employee-select");
+      select.innerHTML = data.employees.map(e =>
+        `<option value="${e.id}">${e.name} (${e.role})</option>`
+      ).join("");
+    }
+
+    async function loadReadiness() {
+      const data = await fetchJSON("/api/readiness");
+      const el = document.getElementById("readiness");
+      el.innerHTML = data.reports.map(r => `
+        <div class="report">
+          <strong>${r.employeeName}</strong>
+          <span class="score">${r.averageReadiness}% ready</span>
+          <p class="meta">${r.completedSkills}/${r.assignedSkills} skills completed</p>
+          ${r.skillGaps.length
+            ? `<p class="gap">Skill gaps: ${r.skillGaps.join(", ")}</p>`
+            : `<p class="meta">No open skill gaps</p>`}
+        </div>
+      `).join("");
+    }
+
+    async function syncDoc(id) {
+      await fetchJSON(`/api/gbrain/sync/${id}`);
+      await refresh();
+    }
+
+    async function syncAll() {
+      await fetchJSON("/api/gbrain/sync-all");
+      await refresh();
+    }
+
+    async function assignSkill() {
+      const employeeId = document.getElementById("employee-select").value;
+      const skillUnitId = document.getElementById("skill-select").value;
+      const status = document.getElementById("assign-status");
+
+      const res = await fetch(`${API}/api/assignments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ employeeId, skillUnitId, assignedBy: "manager" }),
+      });
+      const data = await res.json();
+      status.textContent = data.message || "Assigned";
+      await loadReadiness();
+    }
+
+    async function refresh() {
+      await Promise.all([
+        loadGBrainDocs(),
+        loadSkills(),
+        loadEmployees(),
+        loadReadiness(),
+      ]);
+    }
+
+    refresh().catch(err => {
+      document.body.insertAdjacentHTML("beforeend",
+        `<p class="status" style="color:var(--danger)">API error: ${err.message}. Start the API with: uvicorn skillforge_api.main:app --reload</p>`
+      );
+    });
+  </script>
+</body>
+</html>

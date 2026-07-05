@@ -92,19 +92,33 @@ git clone https://github.com/avinashkr29/SkillForge.git
 cd SkillForge
 ```
 
-Development setup instructions are coming soon as each package is scaffolded.
+### GBrain-first demo
+
+```bash
+# API + manager + employee portals
+cd services/api
+python3 -m venv .venv && source .venv/bin/activate
+pip install -e ../../packages/shared/python -e .
+uvicorn skillforge_api.main:app --reload --port 8000
+```
+
+- Manager: http://localhost:8000/manager — sync GBrain SOPs, assign skills, view gaps
+- Employee: http://localhost:8000/employee — practice assigned procedures
+- LEGO AR verifier: `cd services/cv-verification && python -m lego_ar`
+
+See [docs/gbrain-integration.md](docs/gbrain-integration.md) and [docs/g-stack/README.md](docs/g-stack/README.md).
 
 ## Roadmap
 
 | Phase | Deliverable | Status |
 |-------|-------------|--------|
 | 0 | Repo bootstrap, docs, monorepo skeleton | Complete |
-| 1 | Skill unit JSON schema in `packages/shared` | Planned |
-| 2 | GBrain connector in `services/api` | Planned |
-| 3 | AI structuring pipeline (doc/video → skill unit) | Planned |
-| 4 | Employee practice portal (LEGO demo) | Planned |
-| 5 | Computer vision step verification | Planned |
-| 6 | Manager readiness dashboard | Planned |
+| 1 | Skill unit JSON schema in `packages/shared` | Complete |
+| 2 | GBrain connector in `services/api` | Complete (mock) |
+| 3 | AI structuring pipeline (doc/video → skill unit) | Complete (rule-based) |
+| 4 | Employee practice portal (LEGO demo) | Complete |
+| 5 | Computer vision step verification | Complete |
+| 6 | Manager readiness dashboard | Complete |
 
 ## Demo Scenario
 

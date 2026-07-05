@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skillforge.dev/schema/skill-unit.json",
+  "title": "SkillUnit",
+  "type": "object",
+  "required": ["id", "title", "version", "source", "steps"],
+  "properties": {
+    "id": { "type": "string" },
+    "title": { "type": "string" },
+    "version": { "type": "string" },
+    "productCode": { "type": "string" },
+    "source": {
+      "type": "object",
+      "required": ["type", "documentId", "title"],
+      "properties": {
+        "type": { "enum": ["gbrain_document", "expert_video", "manual"] },
+        "documentId": { "type": "string" },
+        "title": { "type": "string" },
+        "syncedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "safetyLevel": { "enum": ["low", "medium", "high"] },
+    "estimatedDurationMinutes": { "type": "integer", "minimum": 1 },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["order", "title", "instruction", "successCriteria"],
+        "properties": {
+          "order": { "type": "integer", "minimum": 1 },
+          "title": { "type": "string" },
+          "instruction": { "type": "string" },
+          "successCriteria": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "verification": {
+            "type": "object",
+            "properties": {
+              "type": { "enum": ["visual", "sequence", "compliance"] },
+              "sourceColor": { "type": "string" },
+              "targetColor": { "type": "string" },
+              "checkpoints": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "readinessWeights": {
+      "type": "object",
+      "properties": {
+        "sequenceCorrectness": { "type": "number" },
+        "stepCompletion": { "type": "number" },
+        "safetyCompliance": { "type": "number" },
+        "qualityScore": { "type": "number" }
+      }
+    }
+  }
+}

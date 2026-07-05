@@ -21,9 +21,35 @@ sequenceDiagram
     SF->>SF: Store skill unit, publish to portals
 ```
 
+## Current Implementation (Mock)
+
+> Status: **Mock connector implemented** — uses `data/gbrain-mock/` as stand-in GBrain documents until the live API is connected.
+
+The mock ships two manufacturing SOPs:
+
+| Document | Product | Steps |
+|----------|---------|-------|
+| `product-1-assembly.md` | Product 1 | Red block on black block |
+| `product-2-assembly.md` | Product 2 | Red on white, then yellow on red |
+
+Manager and employee portals clearly label content as **sourced from GBrain**. SkillForge is the execution and training layer; GBrain remains the knowledge source.
+
+### Run locally
+
+```bash
+cd services/api
+python3 -m venv .venv && source .venv/bin/activate
+pip install -e ../../packages/shared/python -e ".[dev]"
+uvicorn skillforge_api.main:app --reload --port 8000
+```
+
+- Manager portal: http://localhost:8000/manager
+- Employee portal: http://localhost:8000/employee
+- API docs: http://localhost:8000/docs
+
 ## Authentication
 
-> Status: Planned — approach TBD
+> Status: Planned for live GBrain — mock uses local files
 
 Options under consideration:
 

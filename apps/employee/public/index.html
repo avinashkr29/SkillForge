@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SkillForge Employee — Learn from GBrain</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #151d30;
+      --border: #2a3650;
+      --text: #eef2ff;
+      --muted: #94a3b8;
+      --accent: #6366f1;
+      --gbrain: #22c55e;
+      --step: #38bdf8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 20px;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    header { margin-bottom: 24px; }
+    h1 { font-size: 1.4rem; }
+    .badge {
+      display: inline-block;
+      margin-top: 8px;
+      background: rgba(34, 197, 94, 0.15);
+      color: var(--gbrain);
+      border: 1px solid rgba(34, 197, 94, 0.35);
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+    .card h2 {
+      font-size: 0.85rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 12px;
+    }
+    select, button {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #0f172a;
+      color: var(--text);
+      font-size: 1rem;
+      margin-bottom: 10px;
+    }
+    button {
+      background: var(--accent);
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .assignment {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+    .assignment.active { border-color: var(--accent); }
+    .assignment h3 { font-size: 1rem; }
+    .meta { color: var(--muted); font-size: 0.85rem; margin-top: 4px; }
+    .step {
+      border-left: 3px solid var(--step);
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      background: rgba(56, 189, 248, 0.08);
+      border-radius: 0 8px 8px 0;
+    }
+    .step strong { color: var(--step); }
+    pre {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      overflow-x: auto;
+      font-size: 0.8rem;
+      color: #cbd5e1;
+      margin-top: 10px;
+    }
+    .hint { color: var(--muted); font-size: 0.85rem; line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>My Training</h1>
+    <p class="hint">Skills assigned by your manager, extracted from company knowledge in GBrain</p>
+    <span class="badge">Powered by GBrain → SkillForge</span>
+  </header>
+
+  <section class="card">
+    <h2>Select profile</h2>
+    <select id="employee-select" onchange="loadAssignments()"></select>
+  </section>
+
+  <section class="card">
+    <h2>Assigned skills</h2>
+    <div id="assignments"></div>
+  </section>
+
+  <section class="card" id="skill-detail" style="display:none;">
+    <h2>Procedure steps</h2>
+    <div id="steps"></div>
+    <pre id="ar-instructions"></pre>
+    <p class="hint">Run the LEGO AR verifier with the instructions above:<br>
+      <code>python -m lego_ar --instructions instructions.txt</code>
+    </p>
+    <button onclick="markComplete()">Mark practice complete</button>
+  </section>
+
+  <script>
+    const API = window.location.origin;
+    let selectedAssignment = null;
+    let selectedSkill = null;
+
+    async function fetchJSON(path, options) {
+      const res = await fetch(`${API}${path}`, options);
+      if (!res.ok) throw new Error(await res.text());
+      return res.json();
+    }
+
+    async function loadEmployees() {
+      const data = await fetchJSON("/api/employees");
+      const select = document.getElementById("employee-select");
+      select.innerHTML = data.employees.map(e =>
+        `<option value="${e.id}">${e.name}</option>`
+      ).join("");
+    }
+
+    async function loadAssignments() {
+      const employeeId = document.getElementById("employee-select").value;
+      const [assignments, skills] = await Promise.all([
+        fetchJSON(`/api/assignments?employee_id=${employeeId}`),
+        fetchJSON("/api/skills"),
+      ]);
+
+      const skillMap = Object.fromEntries(skills.skills.map(s => [s.id, s]));
+      const el = document.getElementById("assignments");
+
+      if (!assignments.assignments.length) {
+        el.innerHTML = "<p class='meta'>No skills assigned yet. Ask your manager to assign training from GBrain.</p>";
+        document.getElementById("skill-detail").style.display = "none";
+        return;
+      }
+
+      el.innerHTML = assignments.assignments.map(a => {
+        const skill = skillMap[a.skillUnitId];
+        return `
+          <div class="assignment" onclick="showSkill('${a.id}', '${a.skillUnitId}')">
+            <h3>${skill ? skill.title : a.skillUnitId}</h3>
+            <p class="meta">Status: ${a.status} · From GBrain</p>
+          </div>
+        `;
+      }).join("");
+    }
+
+    async function showSkill(assignmentId, skillId) {
+      selectedAssignment = assignmentId;
+      const skill = await fetchJSON(`/api/skills/${skillId}`);
+      selectedSkill = skill;
+
+      const instructions = await fetch(`${API}/api/skills/${skillId}/instructions.txt`).then(r => r.text());
+
+      document.getElementById("skill-detail").style.display = "block";
+      document.getElementById("steps").innerHTML = skill.steps.map(step => `
+        <div class="step">
+          <strong>Step ${step.order}:</strong> ${step.instruction}
+          ${step.verification?.sourceColor
+            ? `<br><span class="meta">Verify: ${step.verification.sourceColor} on ${step.verification.targetColor}</span>`
+            : ""}
+        </div>
+      `).join("");
+      document.getElementById("ar-instructions").textContent = instructions;
+    }
+
+    async function markComplete() {
+      if (!selectedAssignment) return;
+      await fetchJSON(`/api/assignments/${selectedAssignment}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "completed", readinessScore: 92 }),
+      });
+      await loadAssignments();
+      alert("Practice marked complete. Your manager can see updated readiness.");
+    }
+
+    loadEmployees()
+      .then(loadAssignments)
+      .catch(err => {
+        document.body.insertAdjacentHTML("beforeend",
+          `<p class="hint" style="color:#f87171">API error: ${err.message}</p>`
+        );
+      });
+  </script>
+</body>
+</html>
