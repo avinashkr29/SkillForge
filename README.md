@@ -6,8 +6,10 @@ This repository contains **SkillForge skill documentation** for LEGO assembly ta
 
 We currently provide two foundational LEGO assembly skills:
 
-1. **Red-Blue-Green Tower** - Stack blocks in RGB sequence
-2. **Yellow-Purple-Orange Tower** - Stack blocks in YPO sequence
+1. **Black-Blue-Red Tower** - Stack blocks in Black → Blue → Red sequence
+2. **Red-Blue-Black Tower** - Stack blocks in Red → Blue → Black sequence
+
+**Color Detection**: Both skills use YOLO detection trained on only 3 colors: **BLACK, BLUE, RED**
 
 ## Quick Start
 
@@ -15,10 +17,10 @@ We currently provide two foundational LEGO assembly skills:
 
 ```
 skills/
-├── lego-assembly-red-blue-green/     # Red → Blue → Green stacking
+├── lego-assembly-black-blue-red/     # Black → Blue → Red stacking
 │   ├── README.md                      # Skill overview & steps
 │   └── steps.json                     # Structured step definitions
-└── lego-assembly-yellow-purple-orange/ # Yellow → Purple → Orange stacking
+└── lego-assembly-red-blue-black/     # Red → Blue → Black stacking
     ├── README.md                      # Skill overview & steps
     └── steps.json                     # Structured step definitions
 ```
@@ -32,10 +34,11 @@ skills/
 - Tracks learner progress
 
 ### YOLO (Support - Object Detection)
-- Detects colored LEGO blocks in real-time
+- Detects **only 3 colors**: BLACK, BLUE, RED
 - Verifies correct sequencing
 - Confirms block placement
 - Provides real-time feedback
+- Clear detection instructions to OpenAI for accurate color identification
 
 For details, see [YOLO Integration Guide](docs/YOLO_INTEGRATION.md)
 

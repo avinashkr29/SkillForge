@@ -1,44 +1,49 @@
 {
-  "skill_id": "lego-assembly-red-blue-green",
-  "skill_name": "LEGO Assembly: Red-Blue-Green Tower",
-  "description": "Assemble a LEGO tower by stacking colored blocks in the sequence: Red → Blue → Green",
+  "skill_id": "lego-assembly-black-blue-red",
+  "skill_name": "LEGO Assembly: Black-Blue-Red Tower",
+  "description": "Assemble a LEGO tower by stacking colored blocks in the sequence: Black → Blue → Red",
   "category": "hands-on",
   "difficulty": "beginner",
   "duration_seconds": 60,
+  "detection_colors": ["black", "blue", "red"],
+  "detection_instruction": "Only detect and identify these three colors: BLACK, BLUE, RED. Ignore all other colors.",
   "steps": [
     {
       "step_number": 1,
       "name": "Prepare the Base",
-      "description": "Place the red block on the work surface",
-      "action": "Place red block",
+      "description": "Place the black block on the work surface",
+      "action": "Place black block",
       "verification_type": "color_detection",
-      "expected_object": "red_block",
+      "expected_object": "black_block",
+      "expected_color": "BLACK",
       "duration_seconds": 15,
       "hints": [
         "Make sure the surface is clean",
-        "The red block should be placed flat"
+        "The black block should be placed flat"
       ]
     },
     {
       "step_number": 2,
       "name": "Add Blue Block",
-      "description": "Stack the blue block on top of the red block",
-      "action": "Stack blue on red",
+      "description": "Stack the blue block on top of the black block",
+      "action": "Stack blue on black",
       "verification_type": "sequence_detection",
-      "expected_sequence": ["red_block", "blue_block"],
+      "expected_sequence": ["black_block", "blue_block"],
+      "expected_colors": ["BLACK", "BLUE"],
       "duration_seconds": 20,
       "hints": [
-        "Align the blue block with the red block",
+        "Align the blue block with the black block",
         "Press down gently to secure"
       ]
     },
     {
       "step_number": 3,
-      "name": "Add Green Block",
-      "description": "Stack the green block on top of the blue block",
-      "action": "Stack green on blue",
+      "name": "Add Red Block",
+      "description": "Stack the red block on top of the blue block",
+      "action": "Stack red on blue",
       "verification_type": "sequence_detection",
-      "expected_sequence": ["red_block", "blue_block", "green_block"],
+      "expected_sequence": ["black_block", "blue_block", "red_block"],
+      "expected_colors": ["BLACK", "BLUE", "RED"],
       "duration_seconds": 20,
       "hints": [
         "Keep the tower balanced",
@@ -48,7 +53,8 @@
   ],
   "success_criteria": {
     "all_steps_completed": true,
-    "correct_sequence": ["red_block", "blue_block", "green_block"],
+    "correct_sequence": ["black_block", "blue_block", "red_block"],
+    "correct_colors": ["BLACK", "BLUE", "RED"],
     "structure_stable": true
   }
 }
