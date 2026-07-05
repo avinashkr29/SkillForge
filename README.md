@@ -1,137 +1,160 @@
-# SkillForge
+# SkillForge LEGO Assembly Skills
 
-**Turn company knowledge into executable skills.**
+## Overview
 
-SkillForge is an AI-powered procedural execution platform that transforms company knowledge into structured, executable workflows. Instead of static documents that employees rarely read, SkillForge creates interactive skill units that can be practiced, verified, and measured.
+This repository contains **SkillForge skill documentation** for LEGO assembly tasks. SkillForge is an AI-powered platform that converts organizational knowledge into structured, executable skills with real-time verification.
 
-The platform starts from existing company knowledge stored in GBrain or from expert demonstrations captured on video. AI converts this information into step-by-step procedures with success criteria, allowing employees to learn independently while managers gain real visibility into workforce readiness.
+We currently provide two foundational LEGO assembly skills:
 
-Today, SkillForge verifies human execution through AI coaching. In the future, the same structured procedures can power AI agents, robots, and automated systems.
+1. **Red-Blue-Green Tower** - Stack blocks in RGB sequence
+2. **Yellow-Purple-Orange Tower** - Stack blocks in YPO sequence
 
-## The Problem
+## Quick Start
 
-Companies spend thousands of hours creating SOPs, manuals, and training documents. Most organizational knowledge suffers from several problems:
-
-- Procedures remain trapped inside documents
-- Critical knowledge exists only in experienced employees' heads
-- Managers cannot easily measure whether employees are actually ready to perform a task
-- Training requires experienced mentors and repeated supervision
-- Organizations lack structured execution data that AI agents or robots can understand
-
-Knowledge exists — but it isn't executable.
-
-## Our Solution
-
-SkillForge acts as an execution layer on top of GBrain. It transforms company knowledge into structured skill units that employees can practice independently with AI guidance, while giving organizations measurable insights into execution quality and readiness.
-
-The same structured workflow can later be used by AI agents or physical robots, making today's training data tomorrow's automation foundation.
-
-## How It Works
-
-```mermaid
-flowchart TD
-    subgraph inputs [Knowledge Sources]
-        GBrain[GBrain Documents]
-        Video[Expert Video Demo]
-    end
-    inputs --> Structuring[AI Structuring Engine]
-    Structuring --> SkillUnit[Structured Skill Unit]
-    SkillUnit --> Employee[Employee Practice Portal]
-    Employee --> Verification[AI Step Verification]
-    Verification --> Feedback[Coaching and Readiness Score]
-    Feedback --> Manager[Manager Dashboard]
-```
-
-### Demo Flow
-
-End-to-end demo in five minutes — from GBrain knowledge to manager readiness:
-
-![SkillForge demo flow: GBrain → AI structuring → employee practice → AI feedback → manager dashboard](assets/demo-flow.jpg)
-
-### Dual Knowledge Input
-
-**Existing company documentation** — SOPs, manuals, PDFs, and internal docs stored in GBrain are converted into executable procedures.
-
-**Expert demonstration** — When documentation doesn't exist, an expert performs the task on video. AI extracts the workflow and generates structured documentation automatically.
-
-## Repository Layout
+### Skills Available
 
 ```
-SkillForge/
-├── apps/
-│   ├── employee/     # Mobile-responsive practice portal
-│   └── manager/      # Readiness analytics dashboard
-├── packages/
-│   └── shared/       # Skill unit schema, shared types, UI tokens
-├── services/
-│   └── api/          # GBrain sync, structuring, verification backend
-└── docs/             # Architecture and integration documentation
+skills/
+├── lego-assembly-red-blue-green/     # Red → Blue → Green stacking
+│   ├── README.md                      # Skill overview & steps
+│   └── steps.json                     # Structured step definitions
+└── lego-assembly-yellow-purple-orange/ # Yellow → Purple → Orange stacking
+    ├── README.md                      # Skill overview & steps
+    └── steps.json                     # Structured step definitions
 ```
 
-| Package | Purpose |
-|---------|---------|
-| `apps/employee` | Mobile-responsive web portal for step-by-step practice with camera verification |
-| `apps/manager` | Dashboard for team readiness, execution gaps, and compliance |
-| `packages/shared` | Shared skill unit schema, types, and design tokens |
-| `services/api` | Backend services: GBrain connector, AI structuring, CV verification |
+## Architecture
 
-## Tech Direction
+### SkillForge (Leader)
+- Defines skill steps and sequences
+- Manages learner experience and UI
+- Orchestrates the overall workflow
+- Tracks learner progress
 
-| Layer | Technology |
-|-------|------------|
-| Knowledge source | GBrain API |
-| Structuring | AI workflow extraction (documents and video) |
-| Verification | Computer vision for step sequence and compliance |
-| Employee portal | Mobile-responsive web application |
-| Manager portal | Web analytics dashboard |
+### YOLO (Support - Object Detection)
+- Detects colored LEGO blocks in real-time
+- Verifies correct sequencing
+- Confirms block placement
+- Provides real-time feedback
 
-## Getting Started
+For details, see [YOLO Integration Guide](docs/YOLO_INTEGRATION.md)
+
+## Documentation
+
+- **[Skills Directory](skills/)** - Skill definitions and step documentation
+- **[YOLO Integration](docs/YOLO_INTEGRATION.md)** - How YOLO verifies skills
+- **[Architecture](docs/architecture.md)** - System architecture (from ActionShare module)
+
+## Technology Stack
+
+- **Frontend**: React/TypeScript
+- **Backend**: FastAPI (Python)
+- **Object Detection**: YOLO (Ultralytics)
+- **Framework**: SkillForge (Anthropic)
+
+## Project Structure
+
+```text
+skills/                     # SkillForge skill documentation
+docs/                       # Architecture and integration docs
+backend/                    # FastAPI backend (object detection support)
+frontend/                   # React UI (skill practice interface)
+sample_videos/              # Sample LEGO assembly videos
+scripts/                    # Utility scripts
+```
+
+## Local Development Setup
+
+### Backend Setup
 
 ```bash
-git clone https://github.com/avinashkr29/SkillForge.git
-cd SkillForge
+cd backend
+python3 -m venv .venv
+source .venv/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt
 ```
 
-### GBrain-first demo
+### Frontend Setup
 
 ```bash
-# API + manager + employee portals
-cd services/api
-python3 -m venv .venv && source .venv/bin/activate
-pip install -e ../../packages/shared/python -e .
-uvicorn skillforge_api.main:app --reload --port 8000
+cd frontend
+npm install
+npm run dev -- --host 0.0.0.0
 ```
 
-- Manager: http://localhost:8000/manager — sync GBrain SOPs, assign skills, view gaps
-- Employee: http://localhost:8000/employee — practice assigned procedures
-- LEGO AR verifier: `cd services/cv-verification && python -m lego_ar`
+Access the UI at [http://localhost:5173](http://localhost:5173)
 
-See [docs/gstack-integration.md](docs/gstack-integration.md) for official [GBrain](https://github.com/garrytan/gbrain) + [GStack](https://github.com/garrytan/gstack) setup.
+## Configuration
 
-## Roadmap
+Copy `backend/.env.example` to `backend/.env`:
 
-| Phase | Deliverable | Status |
-|-------|-------------|--------|
-| 0 | Repo bootstrap, docs, monorepo skeleton | Complete |
-| 1 | Skill unit JSON schema in `packages/shared` | Complete |
-| 2 | GBrain connector in `services/api` | Complete (mock) |
-| 3 | AI structuring pipeline (doc/video → skill unit) | Complete (rule-based) |
-| 4 | Employee practice portal (LEGO demo) | Complete |
-| 5 | Computer vision step verification | Complete |
-| 6 | Manager readiness dashboard | Complete |
+```bash
+cd backend
+cp .env.example .env
+```
 
-## Demo Scenario
+Set your OpenAI API key:
+```env
+OPENAI_API_KEY=your_key_here
+```
 
-SkillForge demonstrates end-to-end procedural execution using a LEGO assembly workflow. The process mirrors real manufacturing: AI generates the procedure, the employee follows instructions, AI verifies each step, errors are detected instantly, and readiness updates on the manager dashboard.
+## Optional: Install YOLO Detection
 
-LEGO serves as a visual proxy for real-world assembly, safety, and operational procedures.
+For advanced object detection capabilities:
 
-### Manager Dashboard
+```bash
+cd backend
+source .venv/bin/activate
+pip install -r requirements-yolo.txt
+```
 
-Managers get real-time visibility into team readiness, skill gaps, compliance, and who is ready for real work:
+## Testing
 
-![SkillForge manager dashboard showing team readiness, heatmap, gap reports, and compliance](assets/manager-dashboard.jpg)
+### Backend Tests
+
+```bash
+cd backend
+source .venv/bin/activate
+pytest
+```
+
+### Frontend Tests
+
+```bash
+cd frontend
+npm test
+npm run build
+```
+
+## Integration with GBrain
+
+This skill documentation is designed to be integrated with **GBrain** for:
+- Automatic skill extraction from company documentation
+- Synchronization with SkillForge platform
+- Cross-team skill sharing and discovery
+
+Documentation format follows SkillForge standards for seamless GBrain integration.
+
+## Status
+
+- ✅ Core skill definitions created (v0.1)
+- 🔄 YOLO integration in progress
+- 📋 Awaiting full GBrain sync
+- 🚀 Ready for pilot testing with learners
+
+## Next Steps
+
+1. Fill in detailed step photographs/videos
+2. Configure YOLO model for production
+3. Test with real learners
+4. Sync with GBrain for broader distribution
+5. Expand to additional LEGO assembly products
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT
+
+---
+**Last Updated**: 2026-07-05  
+**Framework**: SkillForge (Anthropic)

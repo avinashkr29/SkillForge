@@ -1,0 +1,54 @@
+{
+  "skill_id": "lego-assembly-yellow-purple-orange",
+  "skill_name": "LEGO Assembly: Yellow-Purple-Orange Tower",
+  "description": "Assemble a LEGO tower by stacking colored blocks in the sequence: Yellow → Purple → Orange",
+  "category": "hands-on",
+  "difficulty": "beginner",
+  "duration_seconds": 60,
+  "steps": [
+    {
+      "step_number": 1,
+      "name": "Prepare the Base",
+      "description": "Place the yellow block on the work surface",
+      "action": "Place yellow block",
+      "verification_type": "color_detection",
+      "expected_object": "yellow_block",
+      "duration_seconds": 15,
+      "hints": [
+        "Make sure the surface is clean",
+        "The yellow block should be placed flat"
+      ]
+    },
+    {
+      "step_number": 2,
+      "name": "Add Purple Block",
+      "description": "Stack the purple block on top of the yellow block",
+      "action": "Stack purple on yellow",
+      "verification_type": "sequence_detection",
+      "expected_sequence": ["yellow_block", "purple_block"],
+      "duration_seconds": 20,
+      "hints": [
+        "Align the purple block with the yellow block",
+        "Press down gently to secure"
+      ]
+    },
+    {
+      "step_number": 3,
+      "name": "Add Orange Block",
+      "description": "Stack the orange block on top of the purple block",
+      "action": "Stack orange on purple",
+      "verification_type": "sequence_detection",
+      "expected_sequence": ["yellow_block", "purple_block", "orange_block"],
+      "duration_seconds": 20,
+      "hints": [
+        "Keep the tower balanced",
+        "Verify all blocks are aligned"
+      ]
+    }
+  ],
+  "success_criteria": {
+    "all_steps_completed": true,
+    "correct_sequence": ["yellow_block", "purple_block", "orange_block"],
+    "structure_stable": true
+  }
+}

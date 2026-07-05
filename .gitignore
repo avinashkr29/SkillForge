@@ -1,51 +1,11 @@
-# Dependencies
-node_modules/
-.pnp
-.pnp.js
-
-# Build outputs
-dist/
-build/
-.next/
-out/
-*.tsbuildinfo
-
-# Environment and secrets
+.DS_Store
 .env
-.env.*
-!.env.example
-*.pem
-credentials.json
-
-# Python
-__pycache__/
-*.py[cod]
 .venv/
-venv/
-*.egg-info/
+__pycache__/
 .pytest_cache/
 .mypy_cache/
-
-# Logs and coverage
-logs/
-*.log
-npm-debug.log*
+node_modules/
+dist/
 coverage/
-.nyc_output/
-
-# OS and IDE
-.DS_Store
-Thumbs.db
-.idea/
-*.swp
-*.swo
-
-# Editor (keep shared settings if added later)
-.vscode/*
-!.vscode/extensions.json
-!.vscode/settings.json
-
-# Misc
-*.local
-.cache/
-.turbo/
+*.pyc
+*.log

@@ -1,0 +1,3 @@
+Take the white block and put it on the black block.
+Take the blue block and put it on the white block.
+Take the red block and put it on the blue block.
