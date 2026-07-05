@@ -69,10 +69,10 @@ class LegoBlockVerifier:
             for index, candidate in enumerate(candidates)
         ]
         prompt = (
-            "You are verifying a tabletop Lego block AR demo. The image has numbered candidate boxes. "
+            "You are verifying a tabletop Lego block AR demo. The image has numbered candidate boxes on a white tissue paper background. "
             "Only accept a candidate if the box clearly contains a physical Lego-style block/brick of the stated color. "
-            "Reject human faces, hands, clothing, walls, ceiling fixtures, screen borders, shadows, reflections, and generic background regions. "
-            "There should be at most one black block, one white block, one red block, and one blue block. "
+            "Reject human faces, hands, clothing, walls, ceiling fixtures, screen borders, shadows, reflections, and the white background. "
+            "Expected colors: black, red, blue, yellow. There should be at most one of each color. "
             "Return only colors for candidates you are confident are real blocks visible in the image."
         )
 
@@ -98,7 +98,7 @@ class LegoBlockVerifier:
                             "properties": {
                                 "verified_colors": {
                                     "type": "array",
-                                    "items": {"type": "string", "enum": ["black", "white", "red", "blue", "yellow"]},
+                                    "items": {"type": "string", "enum": ["black", "red", "blue", "yellow"]},
                                 },
                                 "confidence": {"type": "number", "minimum": 0, "maximum": 1},
                                 "reason": {"type": "string"},

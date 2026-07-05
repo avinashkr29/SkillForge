@@ -1,6 +1,6 @@
 import type { BBox } from "./geometry";
 
-export type LegoColor = "black" | "white" | "red" | "blue" | "yellow";
+export type LegoColor = "black" | "red" | "blue" | "yellow";
 
 export type LegoBlock = {
   id: string;
@@ -19,13 +19,24 @@ export type LegoAssemblyStep = {
   targetColor: LegoColor | null;
 };
 
-const legoColors: LegoColor[] = ["black", "white", "red", "blue", "yellow"];
+const legoColors: LegoColor[] = ["black", "red", "blue", "yellow"];
 
 export const defaultLegoSteps = [
-  "Take the white block and put it on the black block.",
-  "Take the red block and put it on top.",
-  "Take the blue block and put it on top.",
+  "Product 1: Put blue block on top of black block.",
+  "Product 2: Put black block on top of blue block.",
 ].join("\n");
+
+export type Product = {
+  id: string;
+  name: string;
+  topColor: LegoColor;
+  bottomColor: LegoColor;
+};
+
+export const products: Product[] = [
+  { id: "product-1", name: "Product 1", topColor: "blue", bottomColor: "black" },
+  { id: "product-2", name: "Product 2", topColor: "black", bottomColor: "blue" },
+];
 
 function rgbToHsv(r: number, g: number, b: number) {
   const nr = r / 255;
@@ -56,11 +67,12 @@ function rgbToHsv(r: number, g: number, b: number) {
 export function classifyLegoPixel(r: number, g: number, b: number): LegoColor | null {
   const { h, s, v } = rgbToHsv(r, g, b);
 
+  // Skip white/bright areas (tissue paper background)
+  if (v > 0.74 && s < 0.24) {
+    return null;
+  }
   if (v < 0.28) {
     return "black";
-  }
-  if (v > 0.74 && s < 0.24) {
-    return "white";
   }
   if (r > 130 && s > 0.38 && (h >= 330 || h <= 18 || (h >= 315 && b > g))) {
     return "red";
@@ -90,7 +102,7 @@ export function parseLegoSteps(text: string): LegoAssemblyStep[] {
       const sourceColor = colors[0] ?? null;
       let targetColor: LegoColor | null = colors[1] ?? null;
       const placementMatch = lower.match(
-        /(black|white|red|blue|yellow)\s+(?:block|brick)?.*?(?:on|onto|over|above|top of)\s+(?:the\s+)?(black|white|red|blue|yellow)/
+        /(black|red|blue|yellow)\s+(?:block|brick)?.*?(?:on|onto|over|above|top of)\s+(?:the\s+)?(black|red|blue|yellow)/
       );
       if (placementMatch) {
         targetColor = placementMatch[2] as LegoColor;
@@ -210,7 +222,7 @@ export function detectLegoBlocksFromImage(
       : null;
 
   const filteredBlocks = blocks.filter((block) => {
-    if (block.color !== "black" && block.color !== "white") {
+    if (block.color !== "black") {
       return true;
     }
     if (referenceArea === null) {
@@ -236,4 +248,28 @@ export function pickBlockByColor(blocks: LegoBlock[], color: LegoColor | null): 
     return null;
   }
   return blocks.filter((block) => block.color === color).sort((a, b) => b.area - a.area)[0] ?? null;
+}
+
+export function identifyProduct(blocks: LegoBlock[]): Product | null {
+  const blue = pickBlockByColor(blocks, "blue");
+  const black = pickBlockByColor(blocks, "black");
+  
+  if (!blue || !black) {
+    return null;
+  }
+  
+  // Check if blocks are stacked (overlapping bounding boxes)
+  const overlap = !(blue.bbox[2] < black.bbox[0] || blue.bbox[0] > black.bbox[2] ||
+                    blue.bbox[3] < black.bbox[1] || blue.bbox[1] > black.bbox[3]);
+  
+  if (!overlap) {
+    return null;
+  }
+  
+  // The block on top has larger visible area (more prominent in top-down view)
+  if (blue.area > black.area) {
+    return products[0]; // Product 1: Blue on top of Black
+  } else {
+    return products[1]; // Product 2: Black on top of Blue
+  }
 }

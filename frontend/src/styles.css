@@ -453,3 +453,65 @@ h1 {
     grid-template-columns: 100px minmax(0, 1fr);
   }
 }
+
+/* Navigation Button */
+.nav-button {
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: white;
+  color: #137f7a;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.nav-button:hover {
+  border-color: #137f7a;
+  background: rgba(19, 127, 122, 0.05);
+  box-shadow: 0 2px 8px rgba(19, 127, 122, 0.15);
+}
+
+/* Skill Manager Wrapper */
+.skill-manager-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #f4f5f2;
+}
+
+.sm-top-nav {
+  padding: 12px 28px;
+  background: white;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-back-button {
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: white;
+  color: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.nav-back-button:hover {
+  background: #f9faf8;
+  border-color: #137f7a;
+}

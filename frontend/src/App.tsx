@@ -8,16 +8,19 @@ import {
   Play,
   Square,
   Wifi,
-  WifiOff
+  WifiOff,
+  BarChart3
 } from "lucide-react";
 import type { BBox } from "./lib/geometry";
 import { frameBBoxToDisplay } from "./lib/geometry";
 import {
   defaultLegoSteps,
   detectLegoBlocksFromImage,
+  identifyProduct,
   LegoBlock,
   parseLegoSteps,
-  pickBlockByColor
+  pickBlockByColor,
+  Product
 } from "./lib/lego";
 import {
   backendHttpUrl,
@@ -30,6 +33,7 @@ import {
   WsEnvelope
 } from "./lib/messages";
 import type { LegoVerificationResponse } from "./lib/messages";
+import SkillManager from "./SkillManager";
 import "./styles.css";
 
 type EventItem = {
@@ -70,6 +74,16 @@ function fmt(value: number, digits = 0): string {
 }
 
 export default function App() {
+  const [viewMode, setViewMode] = useState<"teaching" | "manager">("teaching");
+
+  if (viewMode === "manager") {
+    return <SkillManagerWithNav onSwitchMode={() => setViewMode("teaching")} />;
+  }
+
+  return <TeachingMode onSwitchMode={() => setViewMode("manager")} />;
+}
+
+function TeachingMode({ onSwitchMode }: { onSwitchMode: () => void }) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const overlayRef = useRef<HTMLCanvasElement | null>(null);
   const captureRef = useRef<HTMLCanvasElement | null>(null);
@@ -102,6 +116,8 @@ export default function App() {
   const [legoBlocks, setLegoBlocks] = useState<LegoBlock[]>([]);
   const [legoStatus, setLegoStatus] = useState("Start camera to identify color blocks");
   const [legoVerifierMode, setLegoVerifierMode] = useState("-");
+  const [detectedProduct, setDetectedProduct] = useState<Product | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<"product-1" | "product-2" | null>(null);
 
   const legoSteps = useMemo(() => parseLegoSteps(legoStepsText), [legoStepsText]);
   const activeLegoStep = legoSteps[Math.min(legoStepIndex, Math.max(0, legoSteps.length - 1))] ?? null;
@@ -332,7 +348,6 @@ export default function App() {
 
     const colorMap: Record<string, string> = {
       black: "#2d3134",
-      white: "#f8faf7",
       red: "#f25555",
       blue: "#34aee8",
       yellow: "#f2c94c"
@@ -524,14 +539,16 @@ export default function App() {
         const verification = (await response.json()) as LegoVerificationResponse;
         setLegoVerifierMode(verification.mode);
         const verifiedColors = new Set(verification.verified_colors);
-        setLegoBlocks(
-          originalScaleCandidates
-            .filter((block) => verifiedColors.has(block.color))
-            .map((block) => ({ ...block, verified: true }))
-        );
+        const verifiedBlocks = originalScaleCandidates
+          .filter((block) => verifiedColors.has(block.color))
+          .map((block) => ({ ...block, verified: true }));
+        setLegoBlocks(verifiedBlocks);
+        setDetectedProduct(identifyProduct(verifiedBlocks));
       } else {
         setLegoVerifierMode("local-fallback");
-        setLegoBlocks(originalScaleCandidates.map((block) => ({ ...block, verified: false })));
+        const localBlocks = originalScaleCandidates.map((block) => ({ ...block, verified: false }));
+        setLegoBlocks(localBlocks);
+        setDetectedProduct(identifyProduct(localBlocks));
       }
     } catch (error) {
       setLegoVerifierMode("verify-error");
@@ -814,6 +831,10 @@ export default function App() {
           />
           <StatusPill icon={<Activity size={16} />} label={`${fmt(metrics.video_fps)} FPS`} tone="neutral" />
           <StatusPill icon={<CheckCircle2 size={16} />} label={`${fmt(metrics.tracking_update_latency_ms, 1)} ms`} tone="neutral" />
+          <button className="nav-button" onClick={onSwitchMode} title="Go to Skill Manager">
+            <BarChart3 size={16} />
+            <span>Skill Manager</span>
+          </button>
         </div>
       </header>
 
@@ -829,8 +850,10 @@ export default function App() {
             />
             <canvas ref={captureRef} hidden />
             <div className={`tracking-banner state-${sessionState.toLowerCase()}`}>
-              <span>{legoGuideText}</span>
-              <strong>{legoStatus}</strong>
+              <span>{selectedProduct ? `Building: ${selectedProduct === "product-1" ? "Product 1 (Blue on Black)" : "Product 2 (Black on Blue)"}` : "Select a product below"}</span>
+              <strong style={{ color: detectedProduct && selectedProduct && detectedProduct.id === selectedProduct ? "#2ec46d" : undefined }}>
+                {detectedProduct ? `DETECTED: ${detectedProduct.name}` : legoStatus}
+              </strong>
             </div>
           </div>
 
@@ -872,17 +895,57 @@ export default function App() {
 
           <div className="lego-panel" aria-label="Lego AR instructions">
             <div className="lego-progress">
-              <strong>{legoStatus}</strong>
-              <span>{legoGuideText}</span>
+              <strong style={{ fontSize: "1.1em" }}>Select Product to Build:</strong>
+              <div style={{ display: "flex", gap: "12px", marginTop: "8px" }}>
+                <button
+                  type="button"
+                  onClick={() => setSelectedProduct("product-1")}
+                  style={{
+                    padding: "12px 20px",
+                    fontSize: "1em",
+                    fontWeight: 600,
+                    border: "2px solid",
+                    borderColor: selectedProduct === "product-1" ? "#2ec46d" : "#444",
+                    borderRadius: "8px",
+                    background: selectedProduct === "product-1" ? "#2ec46d" : "#1a1d1f",
+                    color: selectedProduct === "product-1" ? "#000" : "#fff",
+                    cursor: "pointer"
+                  }}
+                >
+                  Product 1: Blue on Black
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedProduct("product-2")}
+                  style={{
+                    padding: "12px 20px",
+                    fontSize: "1em",
+                    fontWeight: 600,
+                    border: "2px solid",
+                    borderColor: selectedProduct === "product-2" ? "#2ec46d" : "#444",
+                    borderRadius: "8px",
+                    background: selectedProduct === "product-2" ? "#2ec46d" : "#1a1d1f",
+                    color: selectedProduct === "product-2" ? "#000" : "#fff",
+                    cursor: "pointer"
+                  }}
+                >
+                  Product 2: Black on Blue
+                </button>
+              </div>
             </div>
-            <textarea
-              aria-label="Lego assembly steps"
-              value={legoStepsText}
-              onChange={(event) => {
-                setLegoStepsText(event.target.value);
-                setLegoStepIndex(0);
-              }}
-            />
+            <div className="lego-progress" style={{ marginTop: "12px" }}>
+              <span>Detected colors: {legoInventory || "none"}</span>
+              {detectedProduct && selectedProduct && (
+                <strong style={{ 
+                  fontSize: "1.3em", 
+                  color: detectedProduct.id === selectedProduct ? "#2ec46d" : "#f25555",
+                  marginTop: "8px",
+                  display: "block"
+                }}>
+                  {detectedProduct.id === selectedProduct ? "CORRECT!" : `Wrong - Detected ${detectedProduct.name}`}
+                </strong>
+              )}
+            </div>
           </div>
         </section>
 
@@ -942,6 +1005,20 @@ function Metric({ label, value }: { label: string; value: string }) {
     <div className="metric">
       <span>{label}</span>
       <strong>{value}</strong>
+    </div>
+  );
+}
+
+function SkillManagerWithNav({ onSwitchMode }: { onSwitchMode: () => void }) {
+  return (
+    <div className="skill-manager-wrapper">
+      <header className="sm-top-nav">
+        <button className="nav-back-button" onClick={onSwitchMode} title="Back to Teaching Mode">
+          <Activity size={16} />
+          <span>Back to Teaching Mode</span>
+        </button>
+      </header>
+      <SkillManager />
     </div>
   );
 }
